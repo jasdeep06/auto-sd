@@ -1,0 +1,21 @@
+{
+    "gradient_accumulation_steps":1,
+    "learning_rate":2e-6,
+    "lr_scheduler":"constant",
+    "lr_warmup_steps":0,
+    "max_train_steps":1000,
+    "num_class_images":200,
+    "prior_loss_weight":1.0,
+    "pretrained_model_name_or_path":"stabilityai/stable-diffusion-2-base",
+    "pretrained_vae_name_or_path":"stabilityai/sd-vae-ft-mse",
+    "resolution":512,
+    "train_batch_size":1,
+    "train_text_encoder":true,
+    "with_prior_preservation":true,
+    "revision":"fp16",
+    "mixed_precision":"fp16",
+    "train_dataset":"jhanvi-images",
+    "regularization_dataset":"regularization-women",
+    "output_dir":"/work/id/model_out",
+    "concepts_list":"/work/id/concepts_list.json"
+}
