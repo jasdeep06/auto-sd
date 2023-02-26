@@ -96,3 +96,7 @@ def get_wandb_artifacts(artifact_type):
             if artifact.type == "model":
                 artifact_names.append(artifact.name.split(":")[0])
     return artifact_names
+
+# api = wandb.Api()
+# artifact = api.artifact('jasdeep06/generative-ai/run-vft0dxhc-inference_table:latest').get('inference_table')
+# print(artifact)

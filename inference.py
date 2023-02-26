@@ -43,11 +43,14 @@ def run(inference_config):
 
         
 
-        # Loop on the images and save
         # for i in range(len(images)):
         #     wandb.log({"image": wandb.Image(images[i])})
-        inference_table = wandb.Table(columns=["image"], data=[[wandb.Image(img)] for img in images])
-        run.log({"inference_table":inference_table})
+        # inference_table = wandb.Table(columns=["image"], data=[[wandb.Image(img)] for img in images])
+        # run.log({"inference_table":inference_table})
+        inference_artifact = wandb.Artifact(name=f"output-{inference_id}",type="output")
+        for i in range(len(images)):
+            inference_artifact.add(wandb.Image(images[i]))
+        run.log_artifact(inference_artifact)
 
     shutil.rmtree(f"/work/inference/{inference_id}/model")
 
