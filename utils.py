@@ -2,6 +2,7 @@ import json
 import subprocess
 import os
 import glob
+import wandb
 
 def make_dir(dirname):
     return "mkdir {}".format(dirname)
@@ -79,3 +80,19 @@ def get_recent_file_from_directory(dir_name):
 
 def copy_file(src,dest):
     return "cp {} {}".format(src,dest)
+
+def get_wandb_artifacts(artifact_type):
+    api = wandb.Api()
+    # wandb.init()
+    # return [coll.name for coll in api.artifact_type(artifact_type,project='generative-ai').collections()]
+    #return [artifact.name for artifact in wandb.artifacts() if artifact.type == "model"]
+    artifact_names = []
+    for run in api.runs('jasdeep06/generative-ai',filters={"created_at":{"$gt":"2023-02-24T00:00:00","$lt":"2023-02-26T00:00:00}}"}}):
+        # artifacts = api.artifacts(run.path)
+        # for artifact in artifacts:
+        #     if artifact.type == "model":
+        #         artifact_names.append(artifact.name)
+        for artifact in run.logged_artifacts():
+            if artifact.type == "model":
+                artifact_names.append(artifact.name.split(":")[0])
+    return artifact_names

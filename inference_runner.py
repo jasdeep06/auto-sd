@@ -1,5 +1,6 @@
 import json
 from inference import run
+from utils import get_wandb_artifacts
 
 def combinations(lists):
     # Base case: if the input list is empty, return an empty list
@@ -18,6 +19,7 @@ def combinations(lists):
 
 
 inference_run_config = json.load(open("inference_runs_config.json"))
+inference_run_config['model_name'] = get_wandb_artifacts("model")
 param_keys = list(inference_run_config.keys())
 param_values = list(inference_run_config.values())
 param_combinations = combinations(param_values)
