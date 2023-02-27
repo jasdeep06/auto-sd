@@ -8,6 +8,7 @@ import uuid
 import os
 import wandb
 import shutil
+from utils import get_runs_using_artifact
 
 
 
@@ -16,7 +17,11 @@ import shutil
 def run(inference_config):
     wandb.login(key="924764f1e5cac1fa896fada3c8d64b39a0926275")
     #inference_config = json.load(open("inference_config.json"))
-    inference_id = uuid.uuid4().hex[0:8]
+    # inference_id = uuid.uuid4().hex[0:8]
+    all_runs = get_runs_using_artifact(inference_config['model_name'])
+    inference_runs = filter(lambda run: "inference-" in  run, all_runs)
+    inference_index = len(list(inference_runs))
+    inference_id = inference_config['model_name'] + "-" + str(inference_index)
     inference_config['id'] = inference_id
     if not os.path.exists("/work/inference/" + inference_id):
         os.makedirs("/work/inference/" + inference_id)
@@ -42,14 +47,18 @@ def run(inference_config):
             ).images
 
         
-
+        if not os.path.exists("/work/inference/" + inference_id + "/output"):
+            os.makedirs("/work/inference/" + inference_id + "/output")
+        for i,img in enumerate(images):
+            img.save(f"/work/inference/{inference_id}/output/image_{i}.png")
         # for i in range(len(images)):
         #     wandb.log({"image": wandb.Image(images[i])})
         # inference_table = wandb.Table(columns=["image"], data=[[wandb.Image(img)] for img in images])
         # run.log({"inference_table":inference_table})
         inference_artifact = wandb.Artifact(name=f"output-{inference_id}",type="output")
-        for i in range(len(images)):
-            inference_artifact.add(wandb.Image(images[i]))
+        # for i in range(len(images)):
+        #     inference_artifact.add(wandb.Image(images[i]),)
+        inference_artifact.add_dir(f"/work/inference/{inference_id}/output")
         run.log_artifact(inference_artifact)
 
     shutil.rmtree(f"/work/inference/{inference_id}/model")

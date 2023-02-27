@@ -97,6 +97,21 @@ def get_wandb_artifacts(artifact_type):
                 artifact_names.append(artifact.name.split(":")[0])
     return artifact_names
 
-# api = wandb.Api()
-# artifact = api.artifact('jasdeep06/generative-ai/run-vft0dxhc-inference_table:latest').get('inference_table')
-# print(artifact)
+
+def get_runs_using_artifact(artifact_name):
+    filtered_runs = []
+    api = wandb.Api()
+    runs = api.runs("jasdeep06/generative-ai")
+    for run in runs:
+        # if 'trained-model-500d47b9' in run.logged_artifacts():
+        for art in run.used_artifacts():
+            if art.name.split(":")[0] == artifact_name:
+                filtered_runs.append(run.name)
+    return filtered_runs
+# print(runs)
+# for run in runs:
+#     print(run)
+# artifact = api.artifact('jasdeep06/generative-ai/output-40064d62/media/images/9fb69bf9519de4d87e17.png')
+# artifact.download()
+# print(get_runs_using_artifact('trained-model-500d47b9'))
+
