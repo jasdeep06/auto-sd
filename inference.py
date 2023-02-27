@@ -22,7 +22,7 @@ def run(inference_config):
     model_metadata = get_metadata_from_artifact(inference_config['model_name'])
     inference_runs = filter(lambda run: "inference-" in  run, all_runs)
     inference_index = len(list(inference_runs))
-    inference_id = inference_config['model_name'] + "-" + str(inference_index)
+    inference_id = inference_config['model_name'].split("-")[-1] + "-" + str(inference_index)
     inference_config['id'] = inference_id
     if not os.path.exists("/work/inference/" + inference_id):
         os.makedirs("/work/inference/" + inference_id)
@@ -50,13 +50,14 @@ def run(inference_config):
         all_metadata = {}
         all_metadata['model_metadata'] = model_metadata
         all_metadata['inference_config'] = inference_config
-        with open(f"/work/inference/{inference_id}/output/metadata.json","w") as f:
-            json.dump(all_metadata,f)
+        
 
         if not os.path.exists("/work/inference/" + inference_id + "/output"):
             os.makedirs("/work/inference/" + inference_id + "/output")
         for i,img in enumerate(images):
             img.save(f"/work/inference/{inference_id}/output/image_{i}.png")
+        with open(f"/work/inference/{inference_id}/output/metadata.json","w") as f:
+            json.dump(all_metadata,f)
         # for i in range(len(images)):
         #     wandb.log({"image": wandb.Image(images[i])})
         # inference_table = wandb.Table(columns=["image"], data=[[wandb.Image(img)] for img in images])
