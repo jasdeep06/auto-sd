@@ -108,10 +108,21 @@ def get_runs_using_artifact(artifact_name):
             if art.name.split(":")[0] == artifact_name:
                 filtered_runs.append(run.name)
     return filtered_runs
+
+
+def get_metadata_from_artifact(artifact_name):
+    api = wandb.Api()
+    runs = api.runs("jasdeep06/generative-ai")
+    for run in runs:
+        for art in run.logged_artifacts():
+            if art.name.split(":")[0] == artifact_name:
+                return art.metadata
 # print(runs)
 # for run in runs:
 #     print(run)
-# artifact = api.artifact('jasdeep06/generative-ai/output-40064d62/media/images/9fb69bf9519de4d87e17.png')
+# api = wandb.Api()
+# artifact = api.artifact('jasdeep06/generative-ai/output-trained-model-500d47b9-3:latest')
 # artifact.download()
+# print(get_metadata_from_artifact('trained-model-500d47b9'))
 # print(get_runs_using_artifact('trained-model-500d47b9'))
 

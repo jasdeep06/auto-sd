@@ -8,7 +8,7 @@ import uuid
 import os
 import wandb
 import shutil
-from utils import get_runs_using_artifact
+from utils import get_runs_using_artifact,get_metadata_from_artifact
 
 
 
@@ -19,6 +19,7 @@ def run(inference_config):
     #inference_config = json.load(open("inference_config.json"))
     # inference_id = uuid.uuid4().hex[0:8]
     all_runs = get_runs_using_artifact(inference_config['model_name'])
+    model_metadata = get_metadata_from_artifact(inference_config['model_name'])
     inference_runs = filter(lambda run: "inference-" in  run, all_runs)
     inference_index = len(list(inference_runs))
     inference_id = inference_config['model_name'] + "-" + str(inference_index)
@@ -46,7 +47,12 @@ def run(inference_config):
                 guidance_scale=inference_config['guidance_scale'],
             ).images
 
-        
+        all_metadata = {}
+        all_metadata['model_metadata'] = model_metadata
+        all_metadata['inference_config'] = inference_config
+        with open(f"/work/inference/{inference_id}/output/metadata.json","w") as f:
+            json.dump(all_metadata,f)
+
         if not os.path.exists("/work/inference/" + inference_id + "/output"):
             os.makedirs("/work/inference/" + inference_id + "/output")
         for i,img in enumerate(images):
