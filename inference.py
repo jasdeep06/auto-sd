@@ -57,7 +57,7 @@ def run(inference_config):
         for i,img in enumerate(images):
             img.save(f"/work/inference/{inference_id}/output/image_{i}.png")
         with open(f"/work/inference/{inference_id}/output/metadata.json","w") as f:
-            json.dump(all_metadata,f)
+            json.dump(all_metadata,f,indent=4)
         # for i in range(len(images)):
         #     wandb.log({"image": wandb.Image(images[i])})
         # inference_table = wandb.Table(columns=["image"], data=[[wandb.Image(img)] for img in images])
