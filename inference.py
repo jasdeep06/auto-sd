@@ -36,6 +36,7 @@ def run(inference_config):
         scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
         pipe = StableDiffusionPipeline.from_pretrained(f"/work/inference/{inference_id}/model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
 
+        generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
         # Generate the images:
         images = pipe(
                 inference_config['prompt'],
@@ -45,6 +46,7 @@ def run(inference_config):
                 num_images_per_prompt=inference_config['num_samples'],
                 num_inference_steps=inference_config['num_inference_steps'],
                 guidance_scale=inference_config['guidance_scale'],
+                generator=generator,
             ).images
 
         all_metadata = {}
