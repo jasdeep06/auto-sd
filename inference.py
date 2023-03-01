@@ -24,6 +24,7 @@ def run(inference_config):
     inference_index = len(list(inference_runs))
     inference_id = inference_config['model_name'].split("-")[-1] + "-" + str(inference_index)
     inference_config['id'] = inference_id
+    random_seed = inference_config['random_seed']
     if not os.path.exists("/work/inference/" + inference_id):
         os.makedirs("/work/inference/" + inference_id)
 
@@ -36,18 +37,30 @@ def run(inference_config):
         scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
         pipe = StableDiffusionPipeline.from_pretrained(f"/work/inference/{inference_id}/model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
 
-        generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
-        # Generate the images:
-        images = pipe(
-                inference_config['prompt'],
-                height=inference_config['height'],
-                width=inference_config['width'],
-                negative_prompt=inference_config['negative_prompt'],
-                num_images_per_prompt=inference_config['num_samples'],
-                num_inference_steps=inference_config['num_inference_steps'],
-                guidance_scale=inference_config['guidance_scale'],
-                generator=generator,
-            ).images
+        if not random_seed:
+            generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
+            # Generate the images:
+            images = pipe(
+                    inference_config['prompt'],
+                    height=inference_config['height'],
+                    width=inference_config['width'],
+                    negative_prompt=inference_config['negative_prompt'],
+                    num_images_per_prompt=inference_config['num_samples'],
+                    num_inference_steps=inference_config['num_inference_steps'],
+                    guidance_scale=inference_config['guidance_scale'],
+                    generator=generator,
+                ).images
+        else:
+            images = pipe(
+                    inference_config['prompt'],
+                    height=inference_config['height'],
+                    width=inference_config['width'],
+                    negative_prompt=inference_config['negative_prompt'],
+                    num_images_per_prompt=inference_config['num_samples'],
+                    num_inference_steps=inference_config['num_inference_steps'],
+                    guidance_scale=inference_config['guidance_scale'],
+                ).images
+
 
         all_metadata = {}
         all_metadata['model_metadata'] = model_metadata
