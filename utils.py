@@ -117,6 +117,15 @@ def get_metadata_from_artifact(artifact_name):
         for art in run.logged_artifacts():
             if art.name.split(":")[0] == artifact_name:
                 return art.metadata
+
+def download_inference_run_outputs():
+    api = wandb.Api(timeout=100)
+    runs = api.runs("jasdeep06/generative-ai",filters={"created_at":{"$gt":"2023-02-27T00:00:00","$lt":"2023-02-28T00:00:00"}})
+    for run in runs:
+        print(run.name)
+        for artifact in run.logged_artifacts():
+            if artifact.type == "output":
+                artifact.download()
 # print(runs)
 # for run in runs:
 #     print(run)
@@ -126,3 +135,4 @@ def get_metadata_from_artifact(artifact_name):
 # print(get_metadata_from_artifact('trained-model-500d47b9'))
 # print(get_runs_using_artifact('trained-model-500d47b9'))
 
+# download_inference_run_outputs()
