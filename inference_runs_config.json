@@ -1,3 +1,5 @@
 {
-    "prompt":["A photo of ggd women"]
+    "prompt":["A photo of ggd women"],
+    "num_inference_steps":[10,20,40,80,100,120,140,160,180,200],
+    "guidance_scale":[2.5,5,7.5,10,12.5,15,17.5,20,22.5,25]
 }
