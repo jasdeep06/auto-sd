@@ -3,6 +3,7 @@ import subprocess
 import os
 import glob
 import wandb
+import time
 
 def make_dir(dirname):
     return "mkdir {}".format(dirname)
@@ -138,6 +139,15 @@ def filter_model_based_on_metadata_range(key,minval,maxval):
                     model_names.append(art.name.split(":")[0])
     return model_names
 
+def get_runs_and_metadata_using_artifact_optimised(artifact_name):
+    runs = []
+    api = wandb.Api()
+# runs = api.runs("jasdeep06/generative-ai",filters={"used_artifacts":"jasdeep06/generative-ai/trained-model-500d47b9:latest"})
+    art = api.artifact("jasdeep06/generative-ai/{}:latest".format(artifact_name))
+    for run in art.used_by():
+        runs.append(run.name)
+    return runs,art.metadata
+
 # print(filter_model_based_on_metadata_range("learning_rate",0.0000000001,0.0001))
 # print(runs)
 # for run in runs:
@@ -154,3 +164,11 @@ def filter_model_based_on_metadata_range(key,minval,maxval):
 # artifact = api.artifact(name='jasdeep06/generative-ai/trained-model-b29dd1bf:latest',type='model')
 # for run_paths in artifact.used_by():
 #     print(run_paths)
+# t1 = time.time()
+# runs,meta = get_runs_and_metadata_using_artifact_optimised('trained-model-500d47b9')
+# print(runs)
+# print(meta)
+# print(time.time()-t1)
+# t2 = time.time()
+# print(get_metadata_from_artifact('trained-model-500d47b9'))
+# print(time.time()-t2)
