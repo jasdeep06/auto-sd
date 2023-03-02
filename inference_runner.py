@@ -30,7 +30,7 @@ inference_config = json.load(open("inference_config.json"))
 for i,inference_param in enumerate(inference_params):
     for key,value in inference_param.items():
         inference_config[key] = value
-    print("running " + str(i+1) + " of " + str(len(inference_params))
+    print("running " + str(i+1) + " of " + str(len(inference_params)))
     print("running ",inference_config)
     run(inference_config)
 

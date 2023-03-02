@@ -15,12 +15,18 @@ from utils import get_runs_using_artifact,get_metadata_from_artifact
 
 
 def run(inference_config):
-    wandb.login(key="924764f1e5cac1fa896fada3c8d64b39a0926275")
+    #wandb.login(key="924764f1e5cac1fa896fada3c8d64b39a0926275")
     #inference_config = json.load(open("inference_config.json"))
     # inference_id = uuid.uuid4().hex[0:8]
+    print("getting runs....")
     all_runs = get_runs_using_artifact(inference_config['model_name'])
+    print("got runs....")
+    print("getting metadata....")
     model_metadata = get_metadata_from_artifact(inference_config['model_name'])
+    print("got metadata....")
+    print("filtering runs....")
     inference_runs = filter(lambda run: "inference-" in  run, all_runs)
+    print("filtered runs....")
     inference_index = len(list(inference_runs))
     inference_id = inference_config['model_name'].split("-")[-1] + "-" + str(inference_index)
     inference_config['id'] = inference_id
@@ -28,7 +34,9 @@ def run(inference_config):
     if not os.path.exists("/work/inference/" + inference_id):
         os.makedirs("/work/inference/" + inference_id)
 
+    print("initializing wandb....")
     with wandb.init(project='generative-ai',job_type='inference',config=inference_config,name="inference-" + inference_id) as run:
+        print("initialized wandb....")
         model_name = inference_config['model_name']
         model = wandb.use_artifact(f"{model_name}:latest", type="model")
         model.download(f"/work/inference/{inference_id}/model")
