@@ -126,6 +126,19 @@ def download_inference_run_outputs():
         for artifact in run.logged_artifacts():
             if artifact.type == "output":
                 artifact.download()
+
+def filter_model_based_on_metadata_range(key,minval,maxval):
+    model_names = []
+    api = wandb.Api()
+    runs = api.runs("jasdeep06/generative-ai")
+    for run in runs:
+        for art in run.logged_artifacts():
+            if art.type == "model":
+                if art.metadata[key] >= minval and art.metadata[key] <= maxval:
+                    model_names.append(art.name.split(":")[0])
+    return model_names
+
+# print(filter_model_based_on_metadata_range("learning_rate",0.0000000001,0.0001))
 # print(runs)
 # for run in runs:
 #     print(run)
@@ -136,3 +149,8 @@ def download_inference_run_outputs():
 # print(get_runs_using_artifact('trained-model-500d47b9'))
 
 # download_inference_run_outputs()
+
+# api = wandb.Api()
+# artifact = api.artifact(name='jasdeep06/generative-ai/trained-model-b29dd1bf:latest',type='model')
+# for run_paths in artifact.used_by():
+#     print(run_paths)

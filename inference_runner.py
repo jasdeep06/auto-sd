@@ -1,6 +1,6 @@
 import json
 from inference import run
-from utils import get_wandb_artifacts
+from utils import get_wandb_artifacts,filter_model_based_on_metadata_range
 import wandb
 
 def combinations(lists):
@@ -13,14 +13,13 @@ def combinations(lists):
     else:
         result = []
         for item in lists[0]:
-            print(item)
             for subcombination in combinations(lists[1:]):
                 result.append((item,) + subcombination)
         return result
 
 wandb.login(key="924764f1e5cac1fa896fada3c8d64b39a0926275")
 inference_run_config = json.load(open("inference_runs_config.json"))
-inference_run_config['model_name'] = get_wandb_artifacts("model")
+inference_run_config['model_name'] = filter_model_based_on_metadata_range("learning_rate",0.0000000001,0.0001)
 param_keys = list(inference_run_config.keys())
 param_values = list(inference_run_config.values())
 param_combinations = combinations(param_values)
