@@ -4,6 +4,10 @@ import os
 import glob
 import wandb
 import time
+from glob import glob
+import cv2
+import numpy as np
+import time
 
 def make_dir(dirname):
     return "mkdir {}".format(dirname)
@@ -121,12 +125,16 @@ def get_metadata_from_artifact(artifact_name):
 
 def download_inference_run_outputs():
     api = wandb.Api(timeout=100)
-    runs = api.runs("jasdeep06/generative-ai",filters={"created_at":{"$gt":"2023-02-27T00:00:00","$lt":"2023-02-28T00:00:00"}})
-    for run in runs:
+    runs = api.runs("jasdeep06/generative-ai",filters={"created_at":{"$gt":"2023-03-01T16:30:00","$lt":"2023-03-03T06:00:00"}})
+    print(len(runs))
+    for i,run in enumerate(runs):
+        print("Downloading run {} of {}".format(i+1,len(runs)))
         print(run.name)
         for artifact in run.logged_artifacts():
             if artifact.type == "output":
-                artifact.download()
+                dest = os.path.join("outputs",run.name)
+                os.mkdir(dest)
+                artifact.download(dest)
 
 def filter_model_based_on_metadata_range(key,minval,maxval):
     model_names = []
@@ -172,3 +180,65 @@ def get_runs_and_metadata_using_artifact_optimised(artifact_name):
 # t2 = time.time()
 # print(get_metadata_from_artifact('trained-model-500d47b9'))
 # print(time.time()-t2)
+
+
+def make_grid(output_dir):
+    #models = filter_model_based_on_metadata_range("learning_rate",0.0000000001,0.0001)
+    #print(models)
+    models = ['trained-model-500d47b9', 'trained-model-8c8cc399', 'trained-model-652e79b8', 'trained-model-b29dd1bf', 'trained-model-1']
+    inference_runs_config = json.load(open("inference_runs_config.json"))
+    num_inference_steps = inference_runs_config["num_inference_steps"]
+    guidance_scale = inference_runs_config["guidance_scale"]
+    grid = {}
+    output_grid = {}
+    for model in models:
+        model_id = model.split("-")[-1]
+        grid[model_id] = []
+        model_outputs = glob("outputs/inference-{}-*".format(model_id))
+        for model_output in model_outputs:
+            metadata = json.load(open(os.path.join(model_output,"metadata.json")))
+            data = [metadata['inference_config']['num_inference_steps'],metadata['inference_config']['guidance_scale']]
+            image_paths = glob(os.path.join(model_output,"*.png"))
+            for image_path in image_paths:
+                data.append(cv2.imread(image_path))
+            
+            grid[model_id].append(data)
+    for key,value in grid.items():
+        sorted_grid = sorted(value, key=lambda x: (x[0], x[1]))
+        sorted_images = [datum[2:] for datum in sorted_grid]
+        num_images = len(sorted_images[0])
+        horizontal_images = []
+        for i in range(num_images):
+            horizontal_images.append([])
+        for sorted_image in sorted_images:
+            for i in range(num_images):
+                horizontal_images[i].append(sorted_image[i])
+        # for i in range(0,len(sorted_images),len(num_inference_steps)):
+        #     horizontal_images.append(np.hstack(sorted_images[i:i+len(num_inference_steps)]))
+        # grid[key] = np.vstack(horizontal_images)
+        for i,horizontal_image in enumerate(horizontal_images):
+            horizontal_images[i] = [np.hstack(horizontal_image[j:j+len(num_inference_steps)]) for j in range(0,len(horizontal_image),len(num_inference_steps))]
+            if key in output_grid.keys():
+                output_grid[key].append(np.vstack(horizontal_images[i]))
+            else:
+                output_grid[key] = [np.vstack(horizontal_images[i])]
+    if not os.path.exists("formatted_outputs"):
+        os.mkdir("formatted_outputs")
+
+    for key,value in output_grid.items():
+        if not os.path.exists(os.path.join("formatted_outputs",key)):
+            os.mkdir(os.path.join("formatted_outputs",key))
+        for i,indi_val in enumerate(value):
+            cv2.imwrite(os.path.join("formatted_outputs",key,"{}.jpg".format(i)),indi_val)
+
+            
+    
+    # for key,value in grid.items():
+    #     cv2.imwrite("grid_{}.png".format(key),value)
+
+    
+
+                
+                
+
+# make_grid("outputs")
