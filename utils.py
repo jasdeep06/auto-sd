@@ -1,7 +1,6 @@
 import json
 import subprocess
 import os
-import glob
 import wandb
 import time
 from glob import glob
@@ -79,7 +78,7 @@ def run_shell(shell_string):
         print(line.decode(), end='')
 
 def get_recent_file_from_directory(dir_name):
-    list_of_files = glob.glob(dir_name)
+    list_of_files = glob(dir_name)
     latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file
 
