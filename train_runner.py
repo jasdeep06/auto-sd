@@ -23,15 +23,17 @@ def sample(config):
     for key,value in config.items():
         if key not in sample.keys():
             sample[key] = []
-        frequency = value[-1]
         if key == 'learning_rate':
+            frequency = value[-1]
             for i in range(frequency):
                 log_sampling = np.random.uniform(np.log10(value[0]),np.log10(value[1]))
                 sample[key].append(10**log_sampling)
         elif key == 'max_train_steps':
-            for i in range(frequency):
-                sample[key].append(int(np.random.uniform(value[0],value[1])))
+            interval = value[-1]
+            for i in range(value[0],value[1],interval):
+                sample[key].append(i)
     return sample
+
             
 
 
