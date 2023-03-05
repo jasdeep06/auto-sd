@@ -13,7 +13,6 @@ from utils import get_runs_using_artifact,get_metadata_from_artifact,get_runs_an
 
 
 
-
 def run(inference_config):
     #wandb.login(key="924764f1e5cac1fa896fada3c8d64b39a0926275")
     #inference_config = json.load(open("inference_config.json"))
