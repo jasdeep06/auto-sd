@@ -91,6 +91,31 @@ def run(inference_config):
     shutil.rmtree(f"/work/inference/{inference_id}/model")
 
 
+def run_without_wandb_run(inference_config):
+    model_name = inference_config['model_name']
+    api = wandb.Api()
+    artifact = api.artifact('jasdeep06/generative-ai/{}:latest'.format(model_name))
+    artifact.download('model')
+    scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
+    pipe = StableDiffusionPipeline.from_pretrained("model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
+    generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
+    # Generate the images:
+    images = pipe(
+            inference_config['prompt'],
+            height=inference_config['height'],
+            width=inference_config['width'],
+            negative_prompt=inference_config['negative_prompt'],
+            num_images_per_prompt=inference_config['num_samples'],
+            num_inference_steps=inference_config['num_inference_steps'],
+            guidance_scale=inference_config['guidance_scale'],
+            generator=generator,
+        ).images
+    
+    for i,img in enumerate(images):
+        img.save(f"image_{i}.png")
+
+
+
  
 
 
