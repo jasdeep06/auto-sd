@@ -40,17 +40,22 @@ def sample(config):
 
 
 train_runs_config = json.load(open("train_runs_config.json"))
-sampled_config = sample(train_runs_config)
-param_keys = list(sampled_config.keys())
-param_values = list(sampled_config.values())
-param_combinations = combinations(param_values)
+if bool(train_runs_config):
+    sampled_config = sample(train_runs_config)
+    param_keys = list(sampled_config.keys())
+    param_values = list(sampled_config.values())
+    param_combinations = combinations(param_values)
 
-train_params = [dict(zip(param_keys, param_combination)) for param_combination in param_combinations]
+    train_params = [dict(zip(param_keys, param_combination)) for param_combination in param_combinations]
 
-for train_param in train_params:
+    for train_param in train_params:
+        train_config = json.load(open("train_config.json"))
+        for key,value in train_param.items():
+            train_config[key] = value
+        print("running ",train_config)
+        run(train_config)
+else:
     train_config = json.load(open("train_config.json"))
-    for key,value in train_param.items():
-        train_config[key] = value
     print("running ",train_config)
     run(train_config)
 
