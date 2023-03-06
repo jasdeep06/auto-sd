@@ -19,7 +19,7 @@ def run_setup(run_id):
     shell_string += make_dir("/work/" + run_id + "/model_out") + " ; "
     shell_string += move_file("concepts_list_temp.json","/work/" + run_id + "/concepts_list.json") + " ; "
 
-    shell_string += git_clone_in_dir("https://github.com/ShivamShrirao/diffusers.git","/work/" + run_id + "/diffusers") + " ; "
+    shell_string += git_clone_in_dir("https://github.com/jasdeep06/diffusers.git","/work/" + run_id + "/diffusers") + " ; "
     run_shell(shell_string)
 
 
