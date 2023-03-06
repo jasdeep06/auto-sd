@@ -47,6 +47,7 @@ def create_training_shell_script(train_config,run_id):
     train_text_encoder = train_config['train_text_encoder']
     revision = train_config['revision']
     mixed_precision = train_config['mixed_precision']
+    new_tokens = train_config['new_tokens']
 
     shell_string = ""
     shell_string += "accelerate launch /work/{}/diffusers/examples/dreambooth/train_dreambooth.py ".format(run_id)
@@ -69,6 +70,8 @@ def create_training_shell_script(train_config,run_id):
         shell_string += "--train_text_encoder "
     shell_string += "--revision={} ".format(revision)
     shell_string += "--mixed_precision={} ".format(mixed_precision)
+    if bool(new_tokens):
+        shell_string += "--new_tokens={} ".format(" ".join(new_tokens))
 
     return shell_string
 

@@ -17,5 +17,6 @@
     "train_dataset":"jhanvi-images",
     "regularization_dataset":"regularization-women",
     "output_dir":"/work/id/model_out",
-    "concepts_list":"/work/id/concepts_list.json"
+    "concepts_list":"/work/id/concepts_list.json",
+    "new_tokens":["ggd"]
 }
