@@ -7,6 +7,8 @@ from glob import glob
 import cv2
 import numpy as np
 import time
+from transformers import CLIPTokenizer
+
 
 def make_dir(dirname):
     return "mkdir {}".format(dirname)
@@ -233,12 +235,19 @@ def make_grid(output_dir):
         for i,indi_val in enumerate(value):
             cv2.imwrite(os.path.join("formatted_outputs",key,"{}.jpg".format(i)),indi_val)
 
-            
+ 
     
     # for key,value in grid.items():
     #     cv2.imwrite("grid_{}.png".format(key),value)
 
-    
+def check_tokenizer_output(model_dir,prompt):
+    tokenizer = CLIPTokenizer.from_pretrained(os.path.join(model_dir,"tokenizer"))
+    token_idx_to_word = {idx: tokenizer.decode(t)
+                         for idx, t in enumerate(tokenizer(prompt)['input_ids'])
+                         if 0 < idx < len(tokenizer(prompt)['input_ids']) - 1}
+    print(token_idx_to_word)
+
+
 
                 
                 

@@ -8,7 +8,7 @@ import uuid
 import os
 import wandb
 import shutil
-from utils import get_runs_using_artifact,get_metadata_from_artifact,get_runs_and_metadata_using_artifact_optimised
+from utils import get_runs_and_metadata_using_artifact_optimised,check_tokenizer_output
 
 
 
@@ -38,6 +38,7 @@ def run(inference_config):
         model = wandb.use_artifact(f"{model_name}:latest", type="model")
         model.download(f"/work/inference/{inference_id}/model")
 
+        check_tokenizer_output(f"/work/inference/{inference_id}/model",inference_config['prompt'])
         
         scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
         pipe = StableDiffusionPipeline.from_pretrained(f"/work/inference/{inference_id}/model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
@@ -96,6 +97,7 @@ def run_without_wandb_run(inference_config):
     api = wandb.Api()
     artifact = api.artifact('jasdeep06/generative-ai/{}:latest'.format(model_name))
     artifact.download('model')
+    check_tokenizer_output("model",inference_config['prompt'])
     scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
     pipe = StableDiffusionPipeline.from_pretrained("model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
     generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
