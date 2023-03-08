@@ -1,6 +1,6 @@
 [
     {
-        "instance_prompt":      "photo of ggd woman",
+        "instance_prompt":      "photo of rshmka woman",
         "class_prompt":         "photo of a woman",
         "instance_data_dir":    "/work/id/subject_images/",
         "class_data_dir":       "/work/id/regularization_images/"
