@@ -18,9 +18,11 @@ def run(train_config):
     train_config['output_dir'] = train_config['output_dir'].replace('id',run_id)
     train_config['concepts_list'] = train_config['concepts_list'].replace('id',run_id)
 
-    concepts_list = json.load(open(train_config['concepts_list']))
 
     run_setup(run_id)
+
+    concepts_list = json.load(open(train_config['concepts_list']))
+
     with wandb.init(project='generative-ai',job_type='train',config=train_config,name="train-"+run_id) as run:
         train_dataset_names = train_config['train_dataset']
         regularization_dataset_names = train_config['regularization_dataset']

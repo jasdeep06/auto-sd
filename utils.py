@@ -73,7 +73,7 @@ def create_training_shell_script(train_config,run_id):
     shell_string += "--revision={} ".format(revision)
     shell_string += "--mixed_precision={} ".format(mixed_precision)
     if bool(new_tokens):
-        shell_string += "--new_tokens={} ".format(" ".join(new_tokens))
+        shell_string += "--new_tokens {} ".format(" ".join(new_tokens))
 
     return shell_string
 
