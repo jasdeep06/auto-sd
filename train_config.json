@@ -14,9 +14,9 @@
     "with_prior_preservation":true,
     "revision":"fp16",
     "mixed_precision":"fp16",
-    "train_dataset":"rashmika-images",
-    "regularization_dataset":"regularization-women",
+    "train_dataset":["rashmika-images","jhanvi-images"],
+    "regularization_dataset":["regularization-women","regularization-women"],
     "output_dir":"/work/id/model_out",
     "concepts_list":"/work/id/concepts_list.json",
-    "new_tokens":["rshmka"]
+    "new_tokens":["rshmka","jhnvi"]
 }

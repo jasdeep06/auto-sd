@@ -2,7 +2,13 @@
     {
         "instance_prompt":      "photo of rshmka woman",
         "class_prompt":         "photo of a woman",
-        "instance_data_dir":    "/work/id/subject_images/",
+        "instance_data_dir":    "/work/id/rashmika/",
+        "class_data_dir":       "/work/id/regularization_images/"
+    },
+    {
+        "instance_prompt": "photo of jhnvi woman",
+        "class_prompt": "photo of a woman",
+        "instance_data_dir":    "/work/id/jhanvi/",
         "class_data_dir":       "/work/id/regularization_images/"
     }
 ]

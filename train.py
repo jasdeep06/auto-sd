@@ -4,7 +4,7 @@ from utils import create_training_shell_script,get_recent_file_from_directory,ru
 import uuid
 from setup import run_setup
 import shutil
-
+import os
 
 
 
@@ -17,14 +17,33 @@ def run(train_config):
     train_config['id'] = run_id
     train_config['output_dir'] = train_config['output_dir'].replace('id',run_id)
     train_config['concepts_list'] = train_config['concepts_list'].replace('id',run_id)
+
+    concepts_list = json.load(open(train_config['concepts_list']))
+
     run_setup(run_id)
     with wandb.init(project='generative-ai',job_type='train',config=train_config,name="train-"+run_id) as run:
-        train_dataset_name = train_config['train_dataset']
-        train_dataset = wandb.use_artifact(f"{train_dataset_name}:latest", type="data")
-        regularization_dataset_name = train_config['regularization_dataset']
-        regularization_dataset = wandb.use_artifact(f"{regularization_dataset_name}:latest", type="data")
-        train_dataset.download(f"/work/{run_id}/subject_images")
-        regularization_dataset.download(f"/work/{run_id}/regularization_images")
+        train_dataset_names = train_config['train_dataset']
+        regularization_dataset_names = train_config['regularization_dataset']
+
+
+        for i,concept in enumerate(concepts_list):
+            print("Dowloading",f"{train_dataset_names[i]}:latest")
+            train_dataset = wandb.use_artifact(f"{train_dataset_names[i]}:latest", type="data")
+            train_dataset.download(concept['instance_data_dir'])
+
+            if not bool(os.listdir(concept['class_data_dir'])):
+                print("Dowloading",f"{regularization_dataset_names[i]}:latest")
+                regularization_dataset = wandb.use_artifact(f"{regularization_dataset_names[i]}:latest", type="data")
+                regularization_dataset.download(concept['class_data_dir'])
+            else:
+                print("Skipping download of",f"{regularization_dataset_names[i]}:latest")
+
+            
+
+        # train_dataset = wandb.use_artifact(f"{train_dataset_name}:latest", type="data")
+        # regularization_dataset = wandb.use_artifact(f"{regularization_dataset_name}:latest", type="data")
+        # train_dataset.download(f"/work/{run_id}/subject_images")
+        # regularization_dataset.download(f"/work/{run_id}/regularization_images")
 
         
 
