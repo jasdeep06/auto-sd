@@ -13,7 +13,6 @@ from utils import get_runs_and_metadata_using_artifact_optimised,check_tokenizer
 
 
 
-
 def run(inference_config):
     #wandb.login(key="924764f1e5cac1fa896fada3c8d64b39a0926275")
     #inference_config = json.load(open("inference_config.json"))

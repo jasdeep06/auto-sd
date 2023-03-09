@@ -1,0 +1,20 @@
+{
+    "model_name":"trained-model-1",
+    "prompt":"photos of ggd woman",
+    "negative_prompt":"",
+    "num_samples": 4,
+    "guidance_scale": 8.5,
+    "num_inference_steps": 80,
+    "height": 512,
+    "width": 512,
+    "random_seed":false,
+    "tokens_to_alter":["ggd"],
+    "attention_res":16,
+    "max_iter_to_alter":25,
+    "thresholds":"",
+    "scale_factor":20,
+    "scale_range":"",
+    "smooth_attentions":true,
+    "sigma":0.5,
+    "kernel_size":3
+}
