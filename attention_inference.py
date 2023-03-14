@@ -17,7 +17,7 @@ def run(attention_inference_config):
 
     token_indices = get_indices_to_alter(stable,attention_inference_config['prompt'],attention_inference_config['tokens_to_alter'])
     num_images = attention_inference_config['num_samples']
-    for i in range(len(num_images)):
+    for i in range(num_images):
         g = torch.Generator(device=device).manual_seed(i)
         controller = AttentionStore()
         register_attention_control(stable,controller)
@@ -31,12 +31,12 @@ def run(attention_inference_config):
             num_inference_steps = attention_inference_config['num_inference_steps'],
             max_iter_to_alter = attention_inference_config['max_iter_to_alter'],
             run_standard_sd = False,
-            thresholds = field(default_factory=lambda: {0: 0.05, 10: 0.5, 20: 0.8}),
+            thresholds = {0: 0.05, 10: 0.5, 20: 0.8},
             scale_factor = attention_inference_config['scale_factor'],
-            scale_range = field(default_factory=lambda: (1.0, 0.5)),
+            scale_range = (1.0, 0.5),
             smooth_attentions = attention_inference_config['smooth_attentions'],
             sigma = attention_inference_config['sigma'],
-            kerneal_size = attention_inference_config['kernel_size'],
+            kernel_size = attention_inference_config['kernel_size'],
             sd_2_1 = True
         ).images[0]
 
