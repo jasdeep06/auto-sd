@@ -13,6 +13,6 @@ def download_artifact(project,artifact_name,artifact_root):
         print(artifact_dir)
 
 # upload_artifact("generative-ai",
-# "jhanvi-images","data",
-# "X:\\python_projects\\vinglabs\\generative-ai\\stable-diffusion\\data-prep\\jhanvi_resized",
-# "subject images of jhanvi")
+# "regularization-sikh","data",
+# "X:\\python_projects\\vinglabs\\generative-ai\\stable-diffusion\\data-prep\\sikh_images",
+# "regularization images of sikh man")

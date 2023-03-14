@@ -41,9 +41,11 @@ def run(inference_config):
         
         scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
         pipe = StableDiffusionPipeline.from_pretrained(f"/work/inference/{inference_id}/model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
+        num_samples = inference_config['num_samples']
 
         if not random_seed:
-            generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
+            seeds = [i for i in range(num_samples)]
+            generator = [torch.Generator(device='cuda').manual_seed(i) for i in seeds]
             # Generate the images:
             images = pipe(
                     inference_config['prompt'],
@@ -56,6 +58,8 @@ def run(inference_config):
                     generator=generator,
                 ).images
         else:
+            seeds = [random.randint(0,100000) for i in range(num_samples)]
+            generator = [torch.Generator(device='cuda').manual_seed(i) for i in seeds]
             images = pipe(
                     inference_config['prompt'],
                     height=inference_config['height'],
@@ -64,6 +68,7 @@ def run(inference_config):
                     num_images_per_prompt=inference_config['num_samples'],
                     num_inference_steps=inference_config['num_inference_steps'],
                     guidance_scale=inference_config['guidance_scale'],
+                    generator=generator,
                 ).images
 
 
@@ -75,7 +80,7 @@ def run(inference_config):
         if not os.path.exists("/work/inference/" + inference_id + "/output"):
             os.makedirs("/work/inference/" + inference_id + "/output")
         for i,img in enumerate(images):
-            img.save(f"/work/inference/{inference_id}/output/image_{i}.png")
+            img.save(f"/work/inference/{inference_id}/output/image_{seeds[i]}.png")
         with open(f"/work/inference/{inference_id}/output/metadata.json","w") as f:
             json.dump(all_metadata,f,indent=4)
         # for i in range(len(images)):
@@ -98,19 +103,36 @@ def run_without_wandb_run(inference_config):
     artifact.download('model')
     check_tokenizer_output("model",inference_config['prompt'])
     scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", clip_sample=False, set_alpha_to_one=False)
+    random_seed = inference_config['random_seed']
     pipe = StableDiffusionPipeline.from_pretrained("model", scheduler=scheduler, safety_checker=None, torch_dtype=torch.float16, revision="fp16").to("cuda")
-    generator = [torch.Generator(device='cuda').manual_seed(i) for i in range(4)]
-    # Generate the images:
-    images = pipe(
-            inference_config['prompt'],
-            height=inference_config['height'],
-            width=inference_config['width'],
-            negative_prompt=inference_config['negative_prompt'],
-            num_images_per_prompt=inference_config['num_samples'],
-            num_inference_steps=inference_config['num_inference_steps'],
-            guidance_scale=inference_config['guidance_scale'],
-            generator=generator,
-        ).images
+    
+    if not random_seed:
+        seeds = [i for i in range(inference_config['num_samples'])]
+        generator = [torch.Generator(device='cuda').manual_seed(i) for i in seeds]
+        # Generate the images:
+        images = pipe(
+                inference_config['prompt'],
+                height=inference_config['height'],
+                width=inference_config['width'],
+                negative_prompt=inference_config['negative_prompt'],
+                num_images_per_prompt=inference_config['num_samples'],
+                num_inference_steps=inference_config['num_inference_steps'],
+                guidance_scale=inference_config['guidance_scale'],
+                generator=generator,
+            ).images
+    else:
+        seeds = [random.randint(0,100000) for i in range(inference_config['num_samples'])]
+        generator = [torch.Generator(device='cuda').manual_seed(i) for i in seeds]
+        images = pipe(
+                inference_config['prompt'],
+                height=inference_config['height'],
+                width=inference_config['width'],
+                negative_prompt=inference_config['negative_prompt'],
+                num_images_per_prompt=inference_config['num_samples'],
+                num_inference_steps=inference_config['num_inference_steps'],
+                guidance_scale=inference_config['guidance_scale'],
+                generator=generator,
+            ).images
     
     for i,img in enumerate(images):
         img.save(f"image_{i}.png")
