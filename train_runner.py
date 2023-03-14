@@ -1,6 +1,6 @@
 import json
 import numpy as np
-from train import run
+# from train import run
 
 def combinations(lists):
     # Base case: if the input list is empty, return an empty list
@@ -32,6 +32,9 @@ def sample(config):
             interval = value[-1]
             for i in range(value[0],value[1],interval):
                 sample[key].append(i)
+        elif key == 'regularization_dataset':
+            for i in range(len(value)):
+                sample[key].append([value[i]])
     return sample
 
             
@@ -53,7 +56,7 @@ if bool(train_runs_config):
         for key,value in train_param.items():
             train_config[key] = value
         print("running ",train_config)
-        run(train_config)
+        #run(train_config)
 else:
     train_config = json.load(open("train_config.json"))
     print("running ",train_config)
