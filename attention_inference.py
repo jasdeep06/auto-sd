@@ -4,6 +4,7 @@ import torch
 from diffusers import DDIMScheduler
 from dataclasses import field
 import wandb
+import random
 
 def run(attention_inference_config):
     device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
@@ -17,8 +18,14 @@ def run(attention_inference_config):
 
     token_indices = get_indices_to_alter(stable,attention_inference_config['prompt'],attention_inference_config['tokens_to_alter'])
     num_images = attention_inference_config['num_samples']
+    random_seed = attention_inference_config['random_seed']
     for i in range(num_images):
-        g = torch.Generator(device=device).manual_seed(i)
+        if not random_seed:
+            seed = i
+            g = torch.Generator(device=device).manual_seed(seed)
+        else:
+            seed = random.randint(0,100000)
+            g = torch.Generator(device=device).manual_seed(seed)
         controller = AttentionStore()
         register_attention_control(stable,controller)
         image = stable(
@@ -40,7 +47,7 @@ def run(attention_inference_config):
             sd_2_1 = True
         ).images[0]
 
-        image.save(f"image_{i}.png")
+        image.save(f"image_{seed}.png")
 
 
 def get_indices_to_alter(stable,prompt,tokens_to_alter):
