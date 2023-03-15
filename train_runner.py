@@ -1,6 +1,6 @@
 import json
 import numpy as np
-# from train import run
+from train import run
 
 def combinations(lists):
     # Base case: if the input list is empty, return an empty list
@@ -56,7 +56,7 @@ if bool(train_runs_config):
         for key,value in train_param.items():
             train_config[key] = value
         print("running ",train_config)
-        #run(train_config)
+        run(train_config)
 else:
     train_config = json.load(open("train_config.json"))
     print("running ",train_config)
