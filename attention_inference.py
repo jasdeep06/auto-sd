@@ -44,7 +44,8 @@ def run(attention_inference_config):
             smooth_attentions = attention_inference_config['smooth_attentions'],
             sigma = attention_inference_config['sigma'],
             kernel_size = attention_inference_config['kernel_size'],
-            sd_2_1 = True
+            sd_2_1 = True,
+            negative_prompt = attention_inference_config['negative_prompt']
         ).images[0]
 
         image.save(f"image_{seed}.png")
