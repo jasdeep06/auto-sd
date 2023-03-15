@@ -19,8 +19,8 @@ from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionS
 
 from diffusers.pipelines.stable_diffusion import StableDiffusionPipeline
 
-from utils.gaussian_smoothing import GaussianSmoothing
-from utils.ptp_utils import AttentionStore, aggregate_attention
+from ane.utils.gaussian_smoothing import GaussianSmoothing
+from ane.utils.ptp_utils import AttentionStore, aggregate_attention
 
 logger = logging.get_logger(__name__)
 
